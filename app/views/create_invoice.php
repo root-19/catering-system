@@ -12,9 +12,9 @@ use Xendit\Invoice\CreateInvoiceRequest;
 
 Configuration::setXenditKey($xenditApiKey);
 
-if (!isset($_SESSION['user_id'])) {
-    die('You must be logged in to reserve.');
-}
+// if (!isset($_SESSION['user_id'])) {
+//     die('You must be logged in to reserve.');
+// }
 
 // Get POST data
 $userId = $_SESSION['user_id'];
