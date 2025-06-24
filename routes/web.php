@@ -8,6 +8,7 @@ require_once __DIR__ . '/../app/models/User.php';
 require_once __DIR__ . '/../app/controller/AuthController.php';
 require_once __DIR__ . '/../app/controller/ProfileController.php';
 require_once __DIR__ . '/../app/controller/ServiceController.php';
+require_once __DIR__ . '/../app/controller/ReviewController.php';
 
 // Define routes as handler_type, action, is_protected, required_role 
 $routes = [
@@ -29,6 +30,13 @@ $routes = [
     '/home' => ['view', 'home', true, 'user'],
     '/about' => ['view', 'about', true, 'user'],
     '/contact' => ['view', 'contact', true, 'user'],
+    '/services' => ['view', 'services', true, 'user'],
+    '/review' => ['view', 'review', true, 'user'],
+
+
+    // Review routes
+    '/review/submit' => [App\Controller\ReviewController::class, 'submit', true, 'user'],
+    '/review/show' => [App\Controller\ReviewController::class, 'show', false],
 
     // Admin routes
     '/admin/dashboard' => ['view', 'admin/dashboard', true, 'admin'],
@@ -39,8 +47,13 @@ $routes = [
     '/admin/about' => ['view', 'admin/about', true, 'admin'],
     '/admin/contact' => ['view', 'admin/contact', true, 'admin'],
     '/admin/accounts' => ['view', 'admin/accounts', true, 'admin'],
+    '/admin/user_review' => ['view', 'admin/user_review', true, 'admin'],
+
 
     '/admin/service' => [App\Controller\ServiceController::class, 'handleForm', true, 'admin'],
+
+    '/services/view' => ['view', 'service_view', false],
+    '/admin/review/approve' => [App\Controller\ReviewController::class, 'approve', true, 'admin'],
 
 ];
 

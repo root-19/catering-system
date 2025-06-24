@@ -15,6 +15,12 @@ if (session_status() === PHP_SESSION_NONE) {
                     <a href="/dashboard" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out">
                         Dashboard
                     </a>
+                     <a href="/services" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out">
+                     Services
+                    </a>
+                    <a href="/review" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out">
+                     Review
+                    </a>
                     <!-- <a href="/profile" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out">
                         Profile
                     </a>

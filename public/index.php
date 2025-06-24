@@ -1,3 +1,12 @@
+<?php
+require_once __DIR__ . '/../app/models/Review.php';
+use App\Models\Review;
+$reviewModel = new Review();
+$allReviews = $reviewModel->getReviews();
+$reviews = array_filter($allReviews, function($review) {
+    return $review['status'] !== 'pending';
+});
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -45,6 +54,40 @@
             </div>
         </div>
     </main>
+
+    <!-- Review Section -->
+    <section class="max-w-6xl mx-auto px-4 pb-12">
+        <div class="bg-white rounded-2xl shadow-lg p-8 hover-scale mb-8">
+            <h3 class="text-xl font-bold catering-font mb-4 text-yellow-600 text-center">What Our Customers Say</h3>
+            <?php if (empty($reviews)): ?>
+                <p class="text-gray-500 text-center">No reviews yet.</p>
+            <?php else: ?>
+                <div class="flex flex-wrap justify-center gap-8">
+                    <?php foreach ($reviews as $review): ?>
+                        <div class="w-72 min-h-[200px] bg-white border-2 border-yellow-400 rounded-xl p-6 shadow-md flex flex-col">
+                            <div class="flex items-center mb-2 flex-row gap-2">
+                                <span class="flex items-center justify-center h-8 w-8 rounded-full bg-yellow-400 text-black font-bold text-lg shadow-md">
+                                    <?= strtoupper(substr($review['username'], 0, 1)) ?>
+                                </span>
+                                <span class="font-semibold"><?= htmlspecialchars($review['username']) ?></span>
+                                <span class="text-xs text-gray-400">(<?= htmlspecialchars($review['created_at']) ?>)</span>
+                            </div>
+                            <div class="flex items-center mb-2">
+                                <?php for ($i = 1; $i <= 5; $i++): ?>
+                                    <?php if ($i <= $review['rating']): ?>
+                                        <span class="text-yellow-400 text-lg">&#9733;</span>
+                                    <?php else: ?>
+                                        <span class="text-gray-300 text-lg">&#9733;</span>
+                                    <?php endif; ?>
+                                <?php endfor; ?>
+                            </div>
+                            <div class="text-gray-700 flex-1 mb-2"><?= nl2br(htmlspecialchars($review['review_text'])) ?></div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    </section>
 
     <!-- Footer -->
     <footer class="bg-black text-yellow-400 py-6 mt-12">

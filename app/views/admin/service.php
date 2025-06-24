@@ -47,33 +47,33 @@ $locations = ServiceModel::getLocations();
             </div>
         <?php endif; ?>
         <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-8" data-aos="fade-up">
-            <form method="post" action="" class="p-8">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                    <div>
-                        <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                        <select name="category" id="category" class="w-full border border-gray-300 rounded-lg px-3 py-2">
-                            <?php foreach ($menu as $cat => $items): ?>
-                                <option value="<?= $cat ?>"><?= $cat ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="item" class="block text-sm font-medium text-gray-700 mb-2">Menu Item</label>
-                        <select name="item" id="item" class="w-full border border-gray-300 rounded-lg px-3 py-2">
-                            <?php foreach (reset($menu) as $item): ?>
-                                <option value="<?= $item ?>"><?= $item ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="packs" class="block text-sm font-medium text-gray-700 mb-2">Number of Packs</label>
-                        <select name="packs" id="packs" class="w-full border border-gray-300 rounded-lg px-3 py-2">
-                            <?php for ($i = 50; $i <= 100; $i += 10): ?>
-                                <option value="<?= $i ?>"><?= $i ?> packs</option>
-                            <?php endfor; ?>
-                        </select>
+          <form method="POST" action="" enctype="multipart/form-data" class="p-8">
+                <div class="mb-6">
+                    <label for="package_name" class="block text-sm font-medium text-gray-700 mb-2">Package Name</label>
+                    <input type="text" name="package_name" id="package_name" class="w-full border border-gray-300 rounded-lg px-3 py-2" required />
+                </div>
+                <div id="menu-items-wrapper">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 menu-item-row">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                            <select name="category[]" class="w-full border border-gray-300 rounded-lg px-3 py-2 category-select">
+                                <?php foreach ($menu as $cat => $items): ?>
+                                    <option value="<?= $cat ?>"><?= $cat ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Menu Item</label>
+                            <select name="item[]" class="w-full border border-gray-300 rounded-lg px-3 py-2 item-select">
+                                <?php foreach (reset($menu) as $item): ?>
+                                    <option value="<?= $item ?>"><?= $item ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
                     </div>
                 </div>
+                
+                <button type="button" id="add-menu-item" class="mb-6 bg-gray-200 hover:bg-gray-300 text-black font-bold py-1 px-4 rounded">+ Add another item</button>
                 <div class="mb-6">
                     <label for="location" class="block text-sm font-medium text-gray-700 mb-2">Location</label>
                     <select name="location" id="location" class="w-full border border-gray-300 rounded-lg px-3 py-2">
@@ -90,6 +90,18 @@ $locations = ServiceModel::getLocations();
                     <label for="image" class="block text-sm font-medium text-gray-700 mb-2">Image</label>
                     <input type="file" name="image" id="image" accept="image/*" class="w-full border border-gray-300 rounded-lg px-3 py-2" />
                 </div>
+                <div class="mb-6">
+                    <label for="date_time" class="block text-sm font-medium text-gray-700 mb-2">Date and Time</label>
+                    <input type="datetime-local" name="date_time" id="date_time" class="w-full border border-gray-300 rounded-lg px-3 py-2" required />
+                </div>
+                <div class="mb-6">
+                    <label for="packs" class="block text-sm font-medium text-gray-700 mb-2">Packs (50-100)</label>
+                    <input type="number" name="packs" id="packs" min="50" max="100" step="1" class="w-full border border-gray-300 rounded-lg px-3 py-2" required />
+                </div>
+                <div class="mb-6">
+                    <label for="price" class="block text-sm font-medium text-gray-700 mb-2">Total Price</label>
+                    <input type="number" name="price" id="price" step="0.01" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2" required />
+                </div>
                 <button type="submit" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-6 rounded-lg shadow hover-scale">Add Service</button>
             </form>
         </div>
@@ -100,12 +112,14 @@ $locations = ServiceModel::getLocations();
                     <thead class="bg-yellow-50">
                         <tr>
                             <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Package Name</th>
                             <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
                             <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Menu Item</th>
                             <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Packs</th>
                             <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
                             <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
                             <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
                             <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
                         </tr>
                     </thead>
@@ -114,6 +128,7 @@ $locations = ServiceModel::getLocations();
                             <?php foreach ($services as $service): ?>
                                 <tr class="hover:bg-yellow-50 transition-colors duration-200">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?php echo htmlspecialchars($service['id']); ?></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($service['package_name'] ?? ''); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($service['category']); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($service['item']); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($service['packs']); ?></td>
@@ -121,11 +136,12 @@ $locations = ServiceModel::getLocations();
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($service['description'] ?? ''); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                         <?php if (!empty($service['image'])): ?>
-                                            <img src="/resources/image/<?php echo htmlspecialchars($service['image']); ?>" alt="Service Image" class="h-12 w-12 object-cover rounded" />
+                                            <img src="/uplaods/<?php echo htmlspecialchars($service['image']); ?>" alt="Service Image" class="h-12 w-12 object-cover rounded" />
                                         <?php else: ?>
                                             <span class="text-gray-400">No image</span>
                                         <?php endif; ?>
                                     </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($service['date_time'] ?? ''); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?php echo htmlspecialchars($service['created_at']); ?></td>
                                 </tr>
                             <?php endforeach; ?>
@@ -143,18 +159,53 @@ $locations = ServiceModel::getLocations();
         AOS.init({ duration: 800, once: true, offset: 50 });
         // Dynamic menu item update
         const menu = <?php echo json_encode($menu); ?>;
-        document.getElementById('category').addEventListener('change', function() {
-            const items = menu[this.value];
-            const itemSelect = document.getElementById('item');
-            itemSelect.innerHTML = '';
-            items.forEach(function(item) {
-                const opt = document.createElement('option');
-                opt.value = item;
-                opt.textContent = item;
-                itemSelect.appendChild(opt);
+        // For dynamic rows
+        function updateMenuItems(row) {
+            const categorySelect = row.querySelector('.category-select');
+            const itemSelect = row.querySelector('.item-select');
+            categorySelect.addEventListener('change', function() {
+                const items = menu[this.value];
+                itemSelect.innerHTML = '';
+                items.forEach(function(item) {
+                    const opt = document.createElement('option');
+                    opt.value = item;
+                    opt.textContent = item;
+                    itemSelect.appendChild(opt);
+                });
             });
+        }
+        // Initial row
+        document.querySelectorAll('.menu-item-row').forEach(updateMenuItems);
+        // Add new row
+        document.getElementById('add-menu-item').addEventListener('click', function() {
+            const wrapper = document.getElementById('menu-items-wrapper');
+            const firstRow = wrapper.querySelector('.menu-item-row');
+            const newRow = firstRow.cloneNode(true);
+            // Reset values
+            newRow.querySelectorAll('select, input').forEach(el => {
+                if (el.tagName === 'SELECT') el.selectedIndex = 0;
+                if (el.tagName === 'INPUT') el.value = '';
+            });
+            // Add remove button if not present
+            if (!newRow.querySelector('.remove-menu-item')) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.textContent = 'Remove';
+                btn.className = 'remove-menu-item ml-2 bg-red-200 hover:bg-red-400 text-black font-bold py-1 px-2 rounded';
+                btn.onclick = function() {
+                    newRow.remove();
+                };
+                newRow.appendChild(btn);
+            }
+            wrapper.appendChild(newRow);
+            updateMenuItems(newRow);
         });
-
+        // Remove row
+        document.querySelectorAll('.remove-menu-item').forEach(btn => {
+            btn.onclick = function() {
+                btn.closest('.menu-item-row').remove();
+            };
+        });
         <?php if (isset($_SESSION['success'])): ?>
         Swal.fire({
             icon: 'success',

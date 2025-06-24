@@ -12,6 +12,9 @@ class CreateServicesTable {
                 location VARCHAR(100) NOT NULL,
                 description TEXT,
                 image VARCHAR(255),
+                date_time DATETIME,
+                address VARCHAR(255),
+                package_name VARCHAR(255),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ";

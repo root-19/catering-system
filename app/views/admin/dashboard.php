@@ -4,6 +4,7 @@ use root_dev\Config\Database;
 
 require_once __DIR__ . '/layouts/header.php';
 require_once __DIR__ . '/../../../config/database.php';
+require_once __DIR__ . '/../../../app/models/Review.php';
 
 // Create database connection
 $db = \Database::connect();
@@ -12,6 +13,15 @@ $db = \Database::connect();
 $sql = "SELECT COUNT(*) as total FROM users";
 $stmt = $db->query($sql);
 $totalUsers = $stmt->fetch(\PDO::FETCH_ASSOC)['total'];
+
+// Get total services count from database
+$sql = "SELECT COUNT(*) as total FROM services";
+$stmt = $db->query($sql);
+$totalServices = $stmt->fetch(\PDO::FETCH_ASSOC)['total'];
+
+// Get total pending reviews
+$reviewModel = new \App\Models\Review();
+$totalPendingReviews = $reviewModel->countPendingReviews();
 ?>
 
 <!DOCTYPE html>
@@ -51,7 +61,7 @@ $totalUsers = $stmt->fetch(\PDO::FETCH_ASSOC)['total'];
 
         <div class="max-w-7xl mx-auto px-4 py-8">
             <!-- Stats Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                 <!-- Total Users Card -->
                 <div class="bg-white border-2 border-yellow-400 rounded-2xl shadow-lg p-6 hover-scale" data-aos="fade-up" data-aos-delay="100">
                     <div class="flex items-center space-x-4">
@@ -65,8 +75,34 @@ $totalUsers = $stmt->fetch(\PDO::FETCH_ASSOC)['total'];
                     </div>
                 </div>
 
-                <!-- Messages Card -->
+                <!-- Total Services Card -->
                 <div class="bg-white border-2 border-yellow-400 rounded-2xl shadow-lg p-6 hover-scale" data-aos="fade-up" data-aos-delay="200">
+                    <div class="flex items-center space-x-4">
+                        <div class="p-4 rounded-full bg-yellow-100">
+                            <i class="fas fa-concierge-bell text-3xl text-yellow-500"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-600 text-lg">Total Services</p>
+                            <p class="text-3xl font-bold text-yellow-500"><?php echo $totalServices; ?></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pending Reviews Card -->
+                <div class="bg-white border-2 border-yellow-400 rounded-2xl shadow-lg p-6 hover-scale" data-aos="fade-up" data-aos-delay="300">
+                    <div class="flex items-center space-x-4">
+                        <div class="p-4 rounded-full bg-yellow-100">
+                            <i class="fas fa-star-half-alt text-3xl text-yellow-500"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-600 text-lg">Pending Reviews</p>
+                            <p class="text-3xl font-bold text-yellow-500"><?php echo $totalPendingReviews; ?></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages Card -->
+                <div class="bg-white border-2 border-yellow-400 rounded-2xl shadow-lg p-6 hover-scale" data-aos="fade-up" data-aos-delay="400">
                     <div class="flex items-center space-x-4">
                         <div class="p-4 rounded-full bg-yellow-100">
                             <i class="fas fa-envelope text-3xl text-yellow-500"></i>
@@ -79,7 +115,7 @@ $totalUsers = $stmt->fetch(\PDO::FETCH_ASSOC)['total'];
                 </div>
 
                 <!-- Revenue Card -->
-                <div class="bg-white border-2 border-yellow-400 rounded-2xl shadow-lg p-6 hover-scale" data-aos="fade-up" data-aos-delay="300">
+                <div class="bg-white border-2 border-yellow-400 rounded-2xl shadow-lg p-6 hover-scale" data-aos="fade-up" data-aos-delay="500">
                     <div class="flex items-center space-x-4">
                         <div class="p-4 rounded-full bg-yellow-100">
                             <i class="fas fa-chart-line text-3xl text-yellow-500"></i>
@@ -93,7 +129,7 @@ $totalUsers = $stmt->fetch(\PDO::FETCH_ASSOC)['total'];
             </div>
 
             <!-- System Status -->
-            <div class="bg-white border-2 border-yellow-400 rounded-2xl shadow-lg p-6" data-aos="fade-up" data-aos-delay="400">
+            <div class="bg-white border-2 border-yellow-400 rounded-2xl shadow-lg p-6" data-aos="fade-up" data-aos-delay="600">
                 <h2 class="text-2xl font-bold text-yellow-600 mb-6">System Status</h2>
                 <div class="space-y-4">
                     <div class="flex items-center justify-between p-4 bg-yellow-50 rounded-xl">

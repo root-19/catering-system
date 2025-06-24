@@ -53,14 +53,14 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <!-- Logo and Brand -->
-                <div class="flex items-center">
+                <!-- <div class="flex items-center">
                     <div class="flex-shrink-0">
                         <span class="text-gray-800 text-xl font-bold flex items-center">
                             <i class="fas fa-shield-alt mr-2 text-gray-600"></i>
                             Admin Panel
                         </span>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Desktop Navigation -->
                 <div class="hidden md:block">
@@ -76,6 +76,9 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
                         </a>
                         <a href="/admin/accounts" class="nav-link text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
                             <i class="fas fa-service mr-2 text-gray-500"></i>accounts
+                        </a>
+                          <a href="/admin/user_review" class="nav-link text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                            <i class="fas fa-service mr-2 text-gray-500"></i>Review
                         </a>
                     </div>
                 </div>
