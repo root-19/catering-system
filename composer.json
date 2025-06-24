@@ -1,0 +1,23 @@
+{
+    "name": "root_dev/framework",
+    "description": "A secure PHP MVC Framework with JWT authentication",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+      "psr-4": {
+        "root_dev\\": "app/"
+      }
+    },
+    "scripts": {
+      "post-install-cmd": [
+        "php ./scripts/setup.php"
+      ]
+    },
+    "require": {
+      "php": ">=7.4",
+      "vlucas/phpdotenv": "^5.6"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "version": "1.0.0"
+}
