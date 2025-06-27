@@ -39,7 +39,7 @@ $orders = $pdo->query('SELECT o.*, u.username, u.email, s.package_name AS servic
     <main class="max-w-6xl mx-auto px-4 pb-12">
         <div class="bg-white rounded-2xl shadow-lg overflow-hidden" data-aos="fade-up">
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
+                <table class="max-w-7xl divide-y divide-gray-200">
                     <thead class="bg-yellow-50">
                         <tr>
                             <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>

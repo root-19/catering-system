@@ -64,24 +64,38 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 
                 <!-- Desktop Navigation -->
                 <div class="hidden md:block">
-                    <div class="ml-10 flex items-baseline space-x-4">
-                        <a href="/admin/dashboard" class="nav-link text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                            <i class="fas fa-tachometer-alt mr-2 text-gray-500"></i>Dashboard
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="/admin/dashboard" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Dashboard
                         </a>
-                        <a href="/admin/users" class="nav-link text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                            <i class="fas fa-users mr-2 text-gray-500"></i>Users
+                        <a href="/admin/users" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
+                            <i class="fas fa-users"></i>
+                            Users
                         </a>
-                        <a href="/admin/service" class="nav-link text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                            <i class="fas fa-service mr-2 text-gray-500"></i>Service
+                        <a href="/admin/service" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
+                            <i class="fas fa-concierge-bell"></i>
+                            Service
                         </a>
-                        <a href="/admin/accounts" class="nav-link text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                            <i class="fas fa-service mr-2 text-gray-500"></i>accounts
+                        <a href="/admin/accounts" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
+                            <i class="fas fa-wallet"></i>
+                            Accounts
                         </a>
-                          <a href="/admin/user_review" class="nav-link text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                            <i class="fas fa-service mr-2 text-gray-500"></i>Review
+                        <a href="/admin/user_review" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
+                            <i class="fas fa-star"></i>
+                            Review
                         </a>
-                         <a href="/admin/reservation" class="nav-link text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                            <i class="fas fa-service mr-2 text-gray-500"></i>Reservations
+                        <a href="/admin/reservation" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
+                            <i class="fas fa-calendar-check"></i>
+                            Reservations
+                        </a>
+                        <a href="/admin/calendar" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
+                            <i class="fas fa-calendar-alt"></i>
+                            Calendar
+                        </a>
+                        <a href="/admin/reports" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
+                            <i class="fas fa-chart-line"></i>
+                            Reports
                         </a>
                     </div>
                 </div>
@@ -91,10 +105,10 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
                     <div class="ml-4 flex items-center md:ml-6">
                         <div class="relative">
                             <div class="flex items-center space-x-4">
-                                <span class="text-gray-600 flex items-center">
+                                <!-- <span class="text-gray-600 flex items-center">
                                     <i class="fas fa-user-circle mr-2 text-gray-500"></i>
                                     <?php echo htmlspecialchars($_SESSION['username']); ?>
-                                </span>
+                                </span> -->
                                 <a href="/logout" class="user-menu bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200">
                                     <i class="fas fa-sign-out-alt mr-2"></i>Logout
                                 </a>
@@ -115,14 +129,37 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
             <!-- Mobile menu -->
             <div class="mobile-menu hidden md:hidden bg-white rounded-b-lg shadow-xl">
                 <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                    <a href="/admin/dashboard" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium transition-all duration-200">
-                        <i class="fas fa-tachometer-alt mr-2 text-gray-500"></i>Dashboard
+                    <a href="/admin/dashboard" class="text-gray-600 hover:bg-blue-50 hover:text-blue-700 block px-3 py-2 rounded-md text-base font-medium flex items-center gap-2 transition-all duration-200">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
                     </a>
-                    <a href="/admin/users" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium transition-all duration-200">
-                        <i class="fas fa-users mr-2 text-gray-500"></i>Users
+                    <a href="/admin/users" class="text-gray-600 hover:bg-blue-50 hover:text-blue-700 block px-3 py-2 rounded-md text-base font-medium flex items-center gap-2 transition-all duration-200">
+                        <i class="fas fa-users"></i>
+                        Users
                     </a>
-                    <a href="/admin/settings" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium transition-all duration-200">
-                        <i class="fas fa-cog mr-2 text-gray-500"></i>Settings
+                    <a href="/admin/service" class="text-gray-600 hover:bg-blue-50 hover:text-blue-700 block px-3 py-2 rounded-md text-base font-medium flex items-center gap-2 transition-all duration-200">
+                        <i class="fas fa-concierge-bell"></i>
+                        Service
+                    </a>
+                    <a href="/admin/accounts" class="text-gray-600 hover:bg-blue-50 hover:text-blue-700 block px-3 py-2 rounded-md text-base font-medium flex items-center gap-2 transition-all duration-200">
+                        <i class="fas fa-wallet"></i>
+                        Accounts
+                    </a>
+                    <a href="/admin/user_review" class="text-gray-600 hover:bg-blue-50 hover:text-blue-700 block px-3 py-2 rounded-md text-base font-medium flex items-center gap-2 transition-all duration-200">
+                        <i class="fas fa-star"></i>
+                        Review
+                    </a>
+                    <a href="/admin/reservation" class="text-gray-600 hover:bg-blue-50 hover:text-blue-700 block px-3 py-2 rounded-md text-base font-medium flex items-center gap-2 transition-all duration-200">
+                        <i class="fas fa-calendar-check"></i>
+                        Reservations
+                    </a>
+                    <a href="/admin/calendar" class="text-gray-600 hover:bg-blue-50 hover:text-blue-700 block px-3 py-2 rounded-md text-base font-medium flex items-center gap-2 transition-all duration-200">
+                        <i class="fas fa-calendar-alt"></i>
+                        Calendar
+                    </a>
+                    <a href="/admin/reports" class="text-gray-600 hover:bg-blue-50 hover:text-blue-700 block px-3 py-2 rounded-md text-base font-medium flex items-center gap-2 transition-all duration-200">
+                        <i class="fas fa-chart-line"></i>
+                        Reports
                     </a>
                     <div class="border-t border-gray-200 pt-4">
                         <div class="flex items-center px-3">

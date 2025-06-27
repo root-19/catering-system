@@ -51,13 +51,17 @@ $routes = [
     '/admin/accounts' => ['view', 'admin/accounts', true, 'admin'],
     '/admin/user_review' => ['view', 'admin/user_review', true, 'admin'],
     '/admin/reservation' => ['view', 'admin/reservation', true, 'admin'],
+    '/admin/calendar' => ['view', 'admin/calendar', true, 'admin'],
+    '/admin/reports' => ['view', 'admin/reports', true, 'admin'],
+
+
 
 
 
     '/admin/service' => [App\Controller\ServiceController::class, 'handleForm', true, 'admin'],
     '/services/view' => ['view', 'service_view', false],
     '/admin/review/approve' => [App\Controller\ReviewController::class, 'approve', true, 'admin'],
-    '/payment_success' => ['public', 'payment_success', false],
+    '/payment_success' => ['view', 'payment_success', true],
     '/payment_failed' => ['public', 'payment_failed', false],
 
 ];

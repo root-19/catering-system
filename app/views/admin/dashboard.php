@@ -35,6 +35,48 @@ $totalRevenue = $stmt->fetch(\PDO::FETCH_ASSOC)['total'] ?? 0;
 
 // Fetch all reservations for the calendar
 $reservationsForCalendar = $db->query("SELECT o.id, o.reservation_date, u.username, s.package_name FROM orders o JOIN users u ON o.user_id = u.id JOIN services s ON o.service_id = s.id")->fetchAll(PDO::FETCH_ASSOC);
+
+// Fetch monthly data for the last 12 months
+function getMonthlyData($db, $table, $dateColumn, $aggregate = 'COUNT(*)', $where = '', $statusValue = null) {
+    $months = [];
+    $data = [];
+    $now = new DateTime();
+    for ($i = 11; $i >= 0; $i--) {
+        $month = $now->format('Y-m');
+        $months[] = $month;
+        $now->modify('-1 month');
+    }
+    $months = array_reverse($months);
+    $results = array_fill_keys($months, 0);
+    $whereClause = $where ? "WHERE $where" : '';
+    $sql = "SELECT DATE_FORMAT($dateColumn, '%Y-%m') as month, $aggregate as total FROM $table $whereClause GROUP BY month ORDER BY month";
+    $stmt = $db->prepare($sql);
+    if ($statusValue !== null) {
+        $stmt->execute([$statusValue]);
+    } else {
+        $stmt->execute();
+    }
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        if (isset($results[$row['month']])) {
+            $results[$row['month']] = $row['total'];
+        }
+    }
+    return array_values($results);
+}
+
+$monthlyUsers = getMonthlyData($db, 'users', 'created_at');
+$monthlyServices = getMonthlyData($db, 'services', 'created_at');
+$monthlyPendingReviews = getMonthlyData($db, 'reviews', 'created_at', 'COUNT(*)', 'status = ?', 'pending');
+$monthlyReservations = getMonthlyData($db, 'orders', 'reservation_date');
+$monthlyRevenue = getMonthlyData($db, 'orders', 'reservation_date', 'SUM(amount)');
+
+$monthsLabels = [];
+$now = new DateTime();
+for ($i = 11; $i >= 0; $i--) {
+    $monthsLabels[] = $now->format('M');
+    $now->modify('-1 month');
+}
+$monthsLabels = array_reverse($monthsLabels);
 ?>
 
 <!DOCTYPE html>
@@ -141,10 +183,10 @@ $reservationsForCalendar = $db->query("SELECT o.id, o.reservation_date, u.userna
                 </div>
             </div>
 
-            <!-- Intelligent Calendar -->
+            <!-- Analytics Line Chart -->
             <div class="bg-white border-2 border-yellow-400 rounded-2xl shadow-lg p-6 mb-8" data-aos="fade-up" data-aos-delay="550">
-                <h2 class="text-2xl font-bold text-yellow-600 mb-4">Intelligent Calendar</h2>
-                <div id="calendar"></div>
+                <h2 class="text-2xl font-bold text-yellow-600 mb-6">Monthly Analytics Overview</h2>
+                <canvas id="analyticsLineChart" height="100"></canvas>
             </div>
 
             <!-- System Status -->
@@ -171,6 +213,7 @@ $reservationsForCalendar = $db->query("SELECT o.id, o.reservation_date, u.userna
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
         // Initialize AOS
         AOS.init({
@@ -178,12 +221,124 @@ $reservationsForCalendar = $db->query("SELECT o.id, o.reservation_date, u.userna
             once: true
         });
 
+        // Chart.js - Monthly Analytics (Real Data)
+        const months = <?php echo json_encode($monthsLabels); ?>;
+        const usersData = <?php echo json_encode($monthlyUsers); ?>;
+        const servicesData = <?php echo json_encode($monthlyServices); ?>;
+        const reviewsData = <?php echo json_encode($monthlyPendingReviews); ?>;
+        const reservationsData = <?php echo json_encode($monthlyReservations); ?>;
+        const revenueData = <?php echo json_encode($monthlyRevenue); ?>;
+
+        const ctx = document.getElementById('analyticsLineChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [
+                    {
+                        label: 'Total Users',
+                        data: usersData,
+                        borderColor: '#facc15',
+                        backgroundColor: 'rgba(250,204,21,0.1)',
+                        tension: 0.4,
+                        fill: false,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#facc15',
+                    },
+                    {
+                        label: 'Total Services',
+                        data: servicesData,
+                        borderColor: '#34d399',
+                        backgroundColor: 'rgba(52,211,153,0.1)',
+                        tension: 0.4,
+                        fill: false,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#34d399',
+                    },
+                    {
+                        label: 'Pending Reviews',
+                        data: reviewsData,
+                        borderColor: '#f472b6',
+                        backgroundColor: 'rgba(244,114,182,0.1)',
+                        tension: 0.4,
+                        fill: false,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#f472b6',
+                    },
+                    {
+                        label: 'Total Reservations',
+                        data: reservationsData,
+                        borderColor: '#60a5fa',
+                        backgroundColor: 'rgba(96,165,250,0.1)',
+                        tension: 0.4,
+                        fill: false,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#60a5fa',
+                    },
+                    {
+                        label: 'Total Revenue',
+                        data: revenueData,
+                        borderColor: '#f59e42',
+                        backgroundColor: 'rgba(245,158,66,0.1)',
+                        tension: 0.4,
+                        fill: false,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#f59e42',
+                        yAxisID: 'y1',
+                    },
+                ]
+            },
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                stacked: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: false,
+                    },
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Count',
+                        },
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                        title: {
+                            display: true,
+                            text: 'Revenue (₱)',
+                        },
+                    },
+                },
+            },
+        });
+
         // Calendar events from PHP
         const calendarEvents = <?php echo json_encode(array_map(function($r) {
             return [
                 'title' => $r['package_name'] . ' - ' . $r['username'],
                 'start' => $r['reservation_date'],
-                'allDay' => true
+                'allDay' => true,
+                'id' => $r['id'],
+                'username' => $r['username'],
+                'package_name' => $r['package_name'],
+                'reservation_date' => $r['reservation_date'],
             ];
         }, $reservationsForCalendar)); ?>;
 
@@ -200,6 +355,38 @@ $reservationsForCalendar = $db->query("SELECT o.id, o.reservation_date, u.userna
                 },
                 eventColor: '#facc15',
                 eventTextColor: '#000',
+                eventDidMount: function(info) {
+                    let tooltip = document.createElement('div');
+                    tooltip.className = 'fc-tooltip';
+                    tooltip.style.position = 'absolute';
+                    tooltip.style.zIndex = 1000;
+                    tooltip.style.background = '#fffbe6';
+                    tooltip.style.border = '1px solid #facc15';
+                    tooltip.style.padding = '8px 12px';
+                    tooltip.style.borderRadius = '8px';
+                    tooltip.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+                    tooltip.style.display = 'none';
+                    tooltip.innerHTML =
+                        // '<strong>Order ID:</strong> ' + info.event.extendedProps.id + '<br>' +
+                        '<strong>User:</strong> ' + info.event.extendedProps.username + '<br>' +
+                        '<strong>Package:</strong> ' + info.event.extendedProps.package_name + '<br>' +
+                        '<strong>Date:</strong> ' + info.event.extendedProps.reservation_date;
+
+                    document.body.appendChild(tooltip);
+
+                    info.el.addEventListener('mouseenter', function(e) {
+                        tooltip.style.display = 'block';
+                        tooltip.style.left = (e.pageX + 10) + 'px';
+                        tooltip.style.top = (e.pageY + 10) + 'px';
+                    });
+                    info.el.addEventListener('mousemove', function(e) {
+                        tooltip.style.left = (e.pageX + 10) + 'px';
+                        tooltip.style.top = (e.pageY + 10) + 'px';
+                    });
+                    info.el.addEventListener('mouseleave', function() {
+                        tooltip.style.display = 'none';
+                    });
+                },
             });
             calendar.render();
         });
