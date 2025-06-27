@@ -22,6 +22,19 @@ $totalServices = $stmt->fetch(\PDO::FETCH_ASSOC)['total'];
 // Get total pending reviews
 $reviewModel = new \App\Models\Review();
 $totalPendingReviews = $reviewModel->countPendingReviews();
+
+// Get total reservations (orders)
+$sql = "SELECT COUNT(*) as total FROM orders";
+$stmt = $db->query($sql);
+$totalReservations = $stmt->fetch(\PDO::FETCH_ASSOC)['total'];
+
+// Get total revenue from orders
+$sql = "SELECT SUM(amount) as total FROM orders";
+$stmt = $db->query($sql);
+$totalRevenue = $stmt->fetch(\PDO::FETCH_ASSOC)['total'] ?? 0;
+
+// Fetch all reservations for the calendar
+$reservationsForCalendar = $db->query("SELECT o.id, o.reservation_date, u.username, s.package_name FROM orders o JOIN users u ON o.user_id = u.id JOIN services s ON o.service_id = s.id")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -109,7 +122,7 @@ $totalPendingReviews = $reviewModel->countPendingReviews();
                         </div>
                         <div>
                             <p class="text-gray-600 text-lg">Total Reservations</p>
-                            <p class="text-3xl font-bold text-yellow-500">0</p>
+                            <p class="text-3xl font-bold text-yellow-500"><?php echo $totalReservations; ?></p>
                         </div>
                     </div>
                 </div>
@@ -122,10 +135,16 @@ $totalPendingReviews = $reviewModel->countPendingReviews();
                         </div>
                         <div>
                             <p class="text-gray-600 text-lg">Total Revenue</p>
-                            <p class="text-3xl font-bold text-yellow-500">₱0</p>
+                            <p class="text-3xl font-bold text-yellow-500">₱<?php echo number_format($totalRevenue, 2); ?></p>
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Intelligent Calendar -->
+            <div class="bg-white border-2 border-yellow-400 rounded-2xl shadow-lg p-6 mb-8" data-aos="fade-up" data-aos-delay="550">
+                <h2 class="text-2xl font-bold text-yellow-600 mb-4">Intelligent Calendar</h2>
+                <div id="calendar"></div>
             </div>
 
             <!-- System Status -->
@@ -151,11 +170,38 @@ $totalPendingReviews = $reviewModel->countPendingReviews();
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script>
         // Initialize AOS
         AOS.init({
             duration: 800,
             once: true
+        });
+
+        // Calendar events from PHP
+        const calendarEvents = <?php echo json_encode(array_map(function($r) {
+            return [
+                'title' => $r['package_name'] . ' - ' . $r['username'],
+                'start' => $r['reservation_date'],
+                'allDay' => true
+            ];
+        }, $reservationsForCalendar)); ?>;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                height: 500,
+                events: calendarEvents,
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                eventColor: '#facc15',
+                eventTextColor: '#000',
+            });
+            calendar.render();
         });
     </script>
 </body>

@@ -40,7 +40,23 @@ $services = $pdo->query("SELECT * FROM services ORDER BY created_at DESC")->fetc
                         <?php else: ?>
                             <img src="https://via.placeholder.com/400x200?text=No+Image" alt="No Image" class="h-48 w-full object-cover rounded mb-4" />
                         <?php endif; ?>
-                        <div class="mb-2 text-gray-700"><span class="font-semibold">Menu Items:</span> <?php echo htmlspecialchars($service['item']); ?></div>
+                        <div class="mb-2 text-gray-700">
+                            <span class="font-semibold">Menu</span>
+                            <?php
+                                $menu = htmlspecialchars($service['item']);
+                                if (mb_strlen($menu) > 50) {
+                                    $shortMenu = mb_substr($menu, 0, 50) . '...';
+                                    $id = 'menu_' . $service['id'];
+                            ?>
+                                <span id="<?php echo $id; ?>_short"><?php echo $shortMenu; ?></span>
+                                <span id="<?php echo $id; ?>_full" style="display:none;"> <?php echo $menu; ?></span>
+                                <a href="#" class="text-yellow-600 underline ml-2" onclick="document.getElementById('<?php echo $id; ?>_short').style.display='none';document.getElementById('<?php echo $id; ?>_full').style.display='inline';this.style.display='none';return false;">See more</a>
+                            <?php
+                                } else {
+                                    echo $menu;
+                                }
+                            ?>
+                        </div>
                         <div class="mb-2 text-gray-700 text-lg font-semibold">₱<?php echo htmlspecialchars($service['price'] ?? $service['packs']); ?></div>
                         <div class="mb-2 text-gray-700"><span class="font-semibold">Packs:</span> <?php echo htmlspecialchars($service['packs']); ?></div>
                         <div class="mb-2 text-gray-700"><span class="font-semibold">Location:</span> <?php echo htmlspecialchars($service['location']); ?></div>

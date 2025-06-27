@@ -32,6 +32,8 @@ $routes = [
     '/contact' => ['view', 'contact', true, 'user'],
     '/services' => ['view', 'services', true, 'user'],
     '/review' => ['view', 'review', true, 'user'],
+    '/services/create_invoice' => ['view', 'create_invoice', true, 'user'],
+
 
 
     // Review routes
@@ -48,12 +50,15 @@ $routes = [
     '/admin/contact' => ['view', 'admin/contact', true, 'admin'],
     '/admin/accounts' => ['view', 'admin/accounts', true, 'admin'],
     '/admin/user_review' => ['view', 'admin/user_review', true, 'admin'],
+    '/admin/reservation' => ['view', 'admin/reservation', true, 'admin'],
+
 
 
     '/admin/service' => [App\Controller\ServiceController::class, 'handleForm', true, 'admin'],
-
     '/services/view' => ['view', 'service_view', false],
     '/admin/review/approve' => [App\Controller\ReviewController::class, 'approve', true, 'admin'],
+    '/payment_success' => ['public', 'payment_success', false],
+    '/payment_failed' => ['public', 'payment_failed', false],
 
 ];
 

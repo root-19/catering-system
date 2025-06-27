@@ -1,8 +1,8 @@
 <?php
 namespace root_dev\Auth;
 
-// use root_dev\Config\Database;
 require_once __DIR__ . '/../../config/database.php';
+
 class UserAuth {
     private $db;
 

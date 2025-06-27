@@ -80,6 +80,9 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
                           <a href="/admin/user_review" class="nav-link text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
                             <i class="fas fa-service mr-2 text-gray-500"></i>Review
                         </a>
+                         <a href="/admin/reservation" class="nav-link text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                            <i class="fas fa-service mr-2 text-gray-500"></i>Reservations
+                        </a>
                     </div>
                 </div>
 
