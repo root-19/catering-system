@@ -32,6 +32,8 @@ $routes = [
     '/contact' => ['view', 'contact', true, 'user'],
     '/services' => ['view', 'services', true, 'user'],
     '/review' => ['view', 'review', true, 'user'],
+    '/chatbot' => ['view', 'chatbot', true, 'user'],
+
     '/services/create_invoice' => ['view', 'create_invoice', true, 'user'],
 
 

@@ -4,7 +4,7 @@ require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../app/models/User.php';
 
 // Set your Xendit API key directly here
-$xenditApiKey = '';
+$xenditApiKey = 'xnd_development_UdoO4wTc2wKxMKjUMBiQ9XTgL7TUuqrI7E7wxksItv5hD4UZry7qNJTsO1L3p';
 
 use Xendit\Configuration;
 use Xendit\Invoice\InvoiceApi;
@@ -12,9 +12,9 @@ use Xendit\Invoice\CreateInvoiceRequest;
 
 Configuration::setXenditKey($xenditApiKey);
 
-// if (!isset($_SESSION['user_id'])) {
-//     die('You must be logged in to reserve.');
-// }
+if (!isset($_SESSION['user_id'])) {
+    die('You must be logged in to reserve.');
+}
 
 // Get POST data
 $userId = $_SESSION['user_id'];

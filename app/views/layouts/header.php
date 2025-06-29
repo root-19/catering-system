@@ -21,6 +21,9 @@ if (session_status() === PHP_SESSION_NONE) {
                     <a href="/review" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out">
                      Review
                     </a>
+                      <a href="/chatbot" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out">
+                     Chatbot
+                    </a>
                     <!-- <a href="/profile" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out">
                         Profile
                     </a>

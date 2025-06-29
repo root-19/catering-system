@@ -32,6 +32,24 @@ class UserAuth {
         return $stmt->execute([$hashedPassword, $email]);
     }
 
+    public function updateUsername($userId, $username) {
+        try {
+            // Check if username already exists (excluding current user)
+            $stmt = $this->db->prepare("SELECT COUNT(*) FROM users WHERE username = ? AND id != ?");
+            $stmt->execute([$username, $userId]);
+            if ($stmt->fetchColumn() > 0) {
+                return false; // Username already exists
+            }
+
+            // Update username
+            $stmt = $this->db->prepare("UPDATE users SET username = ? WHERE id = ?");
+            return $stmt->execute([$username, $userId]);
+        } catch (\PDOException $e) {
+            error_log("Error updating username: " . $e->getMessage());
+            return false;
+        }
+    }
+
     public function emailExists($email) {
         $stmt = $this->db->prepare("SELECT COUNT(*) FROM users WHERE email = ?");
         $stmt->execute([$email]);

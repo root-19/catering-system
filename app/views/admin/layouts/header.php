@@ -64,8 +64,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 
                 <!-- Desktop Navigation -->
                 <div class="hidden md:block">
-                    <div class="ml-10 flex items-baseline space-x-8">
-                        <a href="/admin/dashboard" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
+                    <div class="flex items-baseline ">
+                        <a href="/admin/dashboard" class="nav-link text-gray-600 hover:text-blue-700 rounded-md text-sm font-medium flex items-center">
                             <i class="fas fa-tachometer-alt"></i>
                             Dashboard
                         </a>

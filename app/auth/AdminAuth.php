@@ -69,6 +69,29 @@ class AdminAuth {
         }
     }
 
+    public function updateUsername($userId, $username) {
+        try {
+            // Check if username already exists (excluding current admin)
+            $stmt = $this->db->prepare("SELECT COUNT(*) FROM admins WHERE username = ? AND id != ?");
+            $stmt->execute([$username, $userId]);
+            if ($stmt->fetchColumn() > 0) {
+                return false; // Username already exists
+            }
+
+            // Update username
+            $stmt = $this->db->prepare("UPDATE admins SET username = ? WHERE id = ?");
+            $success = $stmt->execute([$username, $userId]);
+            
+            // Debug: Log username update attempt
+            // file_put_contents('admin_debug.log', "Username update for admin ID $userId - Success: " . ($success ? "true" : "false") . "\n", FILE_APPEND);
+            
+            return $success;
+        } catch (\Exception $e) {
+            // file_put_contents('admin_debug.log', "Error updating admin username: " . $e->getMessage() . "\n", FILE_APPEND);
+            return false;
+        }
+    }
+
     public function emailExists($email) {
         try {
             $stmt = $this->db->prepare("SELECT COUNT(*) FROM admins WHERE email = ?");
