@@ -111,7 +111,7 @@ $locations = ServiceModel::getLocations();
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-yellow-50">
                         <tr>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                            <!-- <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th> -->
                             <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Package Name</th>
                             <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
                             <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Menu Item</th>
@@ -119,15 +119,16 @@ $locations = ServiceModel::getLocations();
                             <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
                             <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
                             <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
+                            <!-- <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th> -->
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         <?php if (!empty($services)): ?>
                             <?php foreach ($services as $service): ?>
                                 <tr class="hover:bg-yellow-50 transition-colors duration-200">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?php echo htmlspecialchars($service['id']); ?></td>
+                                    <!-- <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?php echo htmlspecialchars($service['id']); ?></td> -->
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($service['package_name'] ?? ''); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($service['category']); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($service['item']); ?></td>
@@ -141,8 +142,16 @@ $locations = ServiceModel::getLocations();
                                             <span class="text-gray-400">No image</span>
                                         <?php endif; ?>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($service['date_time'] ?? ''); ?></td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?php echo htmlspecialchars($service['created_at']); ?></td>
+                                    <!-- <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($service['date_time'] ?? ''); ?></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?php echo htmlspecialchars($service['created_at']); ?></td> -->
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <button 
+                                            class="update-service-btn bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-3 rounded"
+                                            data-service='<?php echo json_encode($service); ?>'
+                                        >
+                                            Update
+                                        </button>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
@@ -155,6 +164,49 @@ $locations = ServiceModel::getLocations();
             </div>
         </div>
     </main>
+    <!-- Update Service Modal -->
+    <div id="updateServiceModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+      <div class="bg-white rounded-lg p-8 w-full max-w-lg relative">
+        <button id="closeUpdateModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+        <h2 class="text-2xl font-bold mb-4">Update Service</h2>
+        <form id="updateServiceForm">
+          <input type="hidden" name="id" id="update_id">
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-1">Package Name</label>
+            <input type="text" name="package_name" id="update_package_name" class="w-full border rounded px-3 py-2">
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-1">Category <span class="text-xs text-gray-400">(one per line)</span></label>
+            <textarea name="category" id="update_category" class="w-full border rounded px-3 py-2" rows="2"></textarea>
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-1">Menu Item <span class="text-xs text-gray-400">(one per line)</span></label>
+            <textarea name="item" id="update_item" class="w-full border rounded px-3 py-2" rows="2"></textarea>
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-1">Packs</label>
+            <input type="number" name="packs" id="update_packs" class="w-full border rounded px-3 py-2">
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-1">Location</label>
+            <input type="text" name="location" id="update_location" class="w-full border rounded px-3 py-2">
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-1">Description</label>
+            <textarea name="description" id="update_description" class="w-full border rounded px-3 py-2"></textarea>
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-1">Date & Time</label>
+            <input type="datetime-local" name="date_time" id="update_date_time" class="w-full border rounded px-3 py-2">
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-1">Price</label>
+            <input type="number" name="price" id="update_price" class="w-full border rounded px-3 py-2">
+          </div>
+          <button type="submit" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-6 rounded-lg shadow">Save Changes</button>
+        </form>
+      </div>
+    </div>
     <script>
         AOS.init({ duration: 800, once: true, offset: 50 });
         // Dynamic menu item update
@@ -222,6 +274,49 @@ $locations = ServiceModel::getLocations();
             confirmButtonColor: '#f87171'
         });
         <?php unset($_SESSION['error']); endif; ?>
+        // Update Service Modal logic
+        // Open modal and fill data
+        document.querySelectorAll('.update-service-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const service = JSON.parse(this.getAttribute('data-service'));
+                document.getElementById('update_id').value = service.id;
+                document.getElementById('update_package_name').value = service.package_name || '';
+                document.getElementById('update_category').value = Array.isArray(service.category) ? service.category.join('\n') : (service.category || '');
+                document.getElementById('update_item').value = Array.isArray(service.item) ? service.item.join('\n') : (service.item || '');
+                document.getElementById('update_packs').value = service.packs || '';
+                document.getElementById('update_location').value = service.location || '';
+                document.getElementById('update_description').value = service.description || '';
+                document.getElementById('update_date_time').value = service.date_time || '';
+                document.getElementById('update_price').value = service.price || '';
+                document.getElementById('updateServiceModal').classList.remove('hidden');
+            });
+        });
+        // Close modal
+        document.getElementById('closeUpdateModal').onclick = function() {
+            document.getElementById('updateServiceModal').classList.add('hidden');
+        };
+        // AJAX submit
+        document.getElementById('updateServiceForm').onsubmit = function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            fetch('/public/admin/update_service.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire('Success', 'Service updated!', 'success').then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire('Error', data.message || 'Update failed', 'error');
+                }
+            })
+            .catch(() => {
+                Swal.fire('Error', 'Update failed', 'error');
+            });
+        };
     </script>
 </body>
 </html>

@@ -58,6 +58,13 @@ $services = $pdo->query("SELECT * FROM services ORDER BY created_at DESC")->fetc
                             ?>
                         </div>
                         <div class="mb-2 text-gray-700 text-lg font-semibold">₱<?php echo htmlspecialchars($service['price'] ?? $service['packs']); ?></div>
+                        <?php
+                            // Calculate downpayment as 30% of price
+                            $price = isset($service['price']) ? floatval($service['price']) : 0;
+                            $downpayment = $price * 0.3;
+                        ?>
+                        <div class="mb-2 text-gray-700 text-base"><span class="font-semibold">Downpayment:</span> ₱<?php echo number_format($downpayment, 2); ?></div>
+                        <!-- <div class="mb-2 text-gray-700 text-base"><span class="font-semibold">Balance after Downpayment:</span> ₱<?php echo number_format($price - $downpayment, 2); ?></div> -->
                         <div class="mb-2 text-gray-700"><span class="font-semibold">Packs:</span> <?php echo htmlspecialchars($service['packs']); ?></div>
                         <div class="mb-2 text-gray-700"><span class="font-semibold">Location:</span> <?php echo htmlspecialchars($service['location']); ?></div>
                         <div class="mb-2 text-gray-700"><span class="font-semibold">Description:</span> <?php echo htmlspecialchars($service['description'] ?? ''); ?></div>
@@ -65,7 +72,7 @@ $services = $pdo->query("SELECT * FROM services ORDER BY created_at DESC")->fetc
                             <!-- <button class="flex-1 bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded">Add</button> -->
                             <a href="/services/view?id=<?php echo urlencode($service['id']); ?>" class="flex-1 bg-yellow-200 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded text-center">View</a>
                         </div>
-                        <div class="mt-2 text-xs text-gray-400 text-right">Added: <?php echo htmlspecialchars($service['created_at']); ?></div>
+                        <!-- <div class="mt-2 text-xs text-gray-400 text-right">Added: <?php echo htmlspecialchars($service['created_at']); ?></div> -->
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>

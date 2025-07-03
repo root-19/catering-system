@@ -35,10 +35,6 @@ $routes = [
     '/chatbot' => ['view', 'chatbot', true, 'user'],
 
     '/services/create_invoice' => ['view', 'create_invoice', true, 'user'],
-
-
-
-    // Review routes
     '/review/submit' => [App\Controller\ReviewController::class, 'submit', true, 'user'],
     '/review/show' => [App\Controller\ReviewController::class, 'show', false],
 

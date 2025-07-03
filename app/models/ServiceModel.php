@@ -1,6 +1,8 @@
 <?php
 namespace App\Models;
 
+require_once __DIR__ . '/../../config/database.php';
+
 class ServiceModel
 {
     public static function getMenu()
@@ -36,5 +38,22 @@ class ServiceModel
     public static function getLocations()
     {
         return ['Manila', 'Quezon City', 'Makati', 'Pasig', 'Taguig'];
+    }
+
+    public static function updateService($data)
+    {
+        $db = \Database::connect();
+        $stmt = $db->prepare("UPDATE services SET package_name=?, category=?, item=?, packs=?, location=?, description=?, date_time=?, price=? WHERE id=?");
+        return $stmt->execute([
+            $data['package_name'],
+            $data['category'],
+            $data['item'],
+            $data['packs'],
+            $data['location'],
+            $data['description'],
+            $data['date_time'],
+            $data['price'],
+            $data['id']
+        ]);
     }
 } 

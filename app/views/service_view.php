@@ -149,10 +149,16 @@ while ($row = $reservedStmt->fetch(PDO::FETCH_ASSOC)) {
             <div class="w-full mb-3"><span class="font-semibold">category:</span> <?php echo htmlspecialchars($service['category']); ?></div>
             <div class="w-full mb-3"><span class="font-semibold">item:</span> <?php echo htmlspecialchars($service['item']); ?></div>
             <div class="w-full mb-3 text-lg"><span class="font-semibold">Price:</span> ₱<?php echo htmlspecialchars($service['price'] ?? $service['packs']); ?></div>
+            <?php
+                            // Calculate downpayment as 30% of price
+                            $price = isset($service['price']) ? floatval($service['price']) : 0;
+                            $downpayment = $price * 0.3;
+                        ?>
+                        <div class="mb-2 text-gray-700 text-base"><span class="font-semibold">Downpayment:</span> ₱<?php echo number_format($downpayment, 2); ?></div>
             <div class="w-full mb-3"><span class="font-semibold">Packs:</span> <?php echo htmlspecialchars($service['packs']); ?></div>
             <div class="w-full mb-3"><span class="font-semibold">Location:</span> <?php echo htmlspecialchars($service['location']); ?></div>
             <div class="w-full mb-3"><span class="font-semibold">Description:</span> <?php echo htmlspecialchars($service['description'] ?? ''); ?></div>
-            <div class="w-full mb-3 text-xs text-gray-400 text-right">Added: <?php echo htmlspecialchars($service['created_at']); ?></div>
+            <!-- <div class="w-full mb-3 text-xs text-gray-400 text-right">Added: <?php echo htmlspecialchars($service['created_at']); ?></div> -->
         </div>
         <!-- Reservation Form (Right) -->
         <div class="reservation-card">
@@ -162,10 +168,10 @@ while ($row = $reservedStmt->fetch(PDO::FETCH_ASSOC)) {
             <?php elseif ($reservationError): ?>
                 <div class="mb-4 p-3 bg-red-100 text-red-700 rounded"><?php echo htmlspecialchars($reservationError); ?></div>
             <?php endif; ?>
-            <form method="post" action="create_invoice" class="space-y-4">
+            <form method="post" action="create_invoice" class="space-y-4" id="reservationForm">
                 <input type="hidden" name="service_id" value="<?php echo htmlspecialchars($serviceId); ?>">
                 <input type="hidden" name="package_name" value="<?php echo htmlspecialchars($service['package_name']); ?>">
-                <input type="hidden" name="amount" value="<?php echo htmlspecialchars($service['price']); ?>">
+                <input type="hidden" name="amount" id="amount" value="<?php echo htmlspecialchars(number_format($downpayment, 2, '.', '')); ?>">
                 <input type="hidden" name="user_email" value="<?php echo isset($_SESSION['user_email']) ? htmlspecialchars($_SESSION['user_email']) : ''; ?>">
                 <div>
                     <label for="reservation_date" class="block font-semibold mb-1">Reservation Date</label>
@@ -175,7 +181,15 @@ while ($row = $reservedStmt->fetch(PDO::FETCH_ASSOC)) {
                     <label for="notes" class="block font-semibold mb-1">Notes</label>
                     <textarea id="notes" name="notes" rows="3" class="w-full border border-gray-300 rounded px-3 py-2" placeholder="Any special instructions?"></textarea>
                 </div>
-                <button type="submit" name="reserve" class="reserve-btn w-full">Reserve & Pay with GCash</button>
+                <div>
+                    <label for="payment_method" class="block font-semibold mb-1">Payment Method</label>
+                    <select id="payment_method" name="payment_method" class="w-full border border-gray-300 rounded px-3 py-2" required>
+                        <option value="downpayment">Pay downpayment now (GCash), remaining in cash</option>
+                        <option value="full_gcash">Pay full amount now (GCash)</option>
+                    </select>
+                    <p class="text-xs text-gray-500 mt-1" id="paymentInfo">You will pay only the downpayment (₱<?php echo number_format($downpayment, 2); ?>) now via GCash. The remaining balance will be paid in cash.</p>
+                </div>
+                <button type="submit" name="reserve" class="reserve-btn w-full" id="reserveBtn">Reserve & Pay with GCash</button>
             </form>
         </div>
     </main>
@@ -210,6 +224,26 @@ while ($row = $reservedStmt->fetch(PDO::FETCH_ASSOC)) {
                     e.preventDefault();
                 }
             });
+        });
+
+        // Payment method logic
+        const paymentMethod = document.getElementById('payment_method');
+        const amountInput = document.getElementById('amount');
+        const paymentInfo = document.getElementById('paymentInfo');
+        const reserveBtn = document.getElementById('reserveBtn');
+        const downpayment = <?php echo json_encode(number_format($downpayment, 2, '.', '')); ?>;
+        const fullAmount = <?php echo json_encode(number_format($price, 2, '.', '')); ?>;
+
+        paymentMethod.addEventListener('change', function() {
+            if (this.value === 'downpayment') {
+                amountInput.value = downpayment;
+                paymentInfo.textContent = `You will pay only the downpayment (₱${Number(downpayment).toLocaleString(undefined, {minimumFractionDigits:2})}) now via GCash. The remaining balance will be paid in cash.`;
+                reserveBtn.textContent = 'Reserve & Pay Downpayment with GCash';
+            } else {
+                amountInput.value = fullAmount;
+                paymentInfo.textContent = `You will pay the full amount (₱${Number(fullAmount).toLocaleString(undefined, {minimumFractionDigits:2})}) now via GCash.`;
+                reserveBtn.textContent = 'Reserve & Pay Full Amount with GCash';
+            }
         });
     </script>
 </body>
