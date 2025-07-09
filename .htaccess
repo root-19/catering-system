@@ -1,15 +1,9 @@
-Options +FollowSymLinks
-RewriteEngine On
+<IfModule mod_rewrite.c>
+    RewriteEngine On
 
-# Remove .php extension
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME}.php -f
-RewriteRule ^([^\.]+)$ $1.php [NC,L]
+    # Redirect to public/index.php if file or directory doesn't exist
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
 
-# Handle direct PHP file access
-<FilesMatch "\.php$">
-    SetHandler application/x-httpd-php
-</FilesMatch>
-
-# Prevent directory listing
-Options -Indexes
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>

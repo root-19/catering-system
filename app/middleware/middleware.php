@@ -52,6 +52,16 @@ class AuthMiddleware
         }
     }
 
+    // Check if the user is a helper
+    public static function checkHelper()
+    {
+        self::startSession();
+
+        if (empty($_SESSION['user_id']) || ($_SESSION['role'] ?? null) !== 'helper') {
+            self::logoutAndRedirect('/login');
+        }
+    }
+
     // Redirect and destroy session
     private static function logoutAndRedirect($location)
     {

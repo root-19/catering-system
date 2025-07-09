@@ -6,6 +6,11 @@ $allReviews = $reviewModel->getReviews();
 $reviews = array_filter($allReviews, function($review) {
     return $review['status'] !== 'pending';
 });
+
+require_once __DIR__ . '/../app/models/Posting.php';
+use App\Models\Posting;
+$postingModel = new Posting();
+$postings = $postingModel->getAllPostings(); // Adjust method name as per your model
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -30,7 +35,7 @@ $reviews = array_filter($allReviews, function($review) {
                 <img src="https://img.icons8.com/ios-filled/50/000000/restaurant-table.png" alt="Catering Logo" class="h-10 w-10">
                 <span class="text-2xl catering-font font-bold tracking-wide">CaterServe</span>
             </div>
-            <a href="/public/login.php" class="bg-black text-yellow-400 px-5 py-2 rounded-lg font-semibold hover:bg-yellow-500 hover:text-black transition">Login</a>
+            <a href="login" class="bg-black text-yellow-400 px-5 py-2 rounded-lg font-semibold hover:bg-yellow-500 hover:text-black transition">Login</a>
         </div>
     </header>
 
@@ -88,6 +93,74 @@ $reviews = array_filter($allReviews, function($review) {
             <?php endif; ?>
         </div>
     </section>
+
+    <!-- Posting Section -->
+    <section class="max-w-6xl mx-auto px-4 pb-12">
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+            <h3 class="text-2xl font-bold catering-font mb-6 text-yellow-600 text-center">Latest Announcements</h3>
+            <?php if (empty($postings)): ?>
+                <p class="text-gray-500 text-center">No announcements at this time.</p>
+            <?php else: ?>
+                <div class="flex flex-wrap justify-center gap-8">
+                    <?php foreach ($postings as $idx => $post): 
+                        $images = [];
+                        for ($i = 1; $i <= 5; $i++) {
+                            if (!empty($post['image'.$i])) {
+                                $images[] = '/uplaods/' . htmlspecialchars($post['image'.$i]);
+                            }
+                        }
+                    ?>
+                        <div class="w-96 min-h-[350px] bg-yellow-50 border-2 border-yellow-400 rounded-xl p-6 shadow-md flex flex-col items-center">
+                            <div class="text-gray-700 text-lg flex-1 mb-4 w-full text-center"><?= nl2br(htmlspecialchars($post['description'])) ?></div>
+                            <?php if (count($images) > 0): ?>
+                                <div class="relative flex items-center justify-center mb-4 w-full h-56">
+                                    <button type="button" class="absolute left-2 z-10 bg-yellow-400 hover:bg-yellow-600 text-black rounded-full p-3 shadow top-1/2 -translate-y-1/2 text-xl" onclick="showPrevImage(<?= $idx ?>)">
+                                        &#8592;
+                                    </button>
+                                    <img id="post-image-<?= $idx ?>" src="<?= $images[0] ?>" data-images='<?= json_encode($images) ?>' data-index="0" class="h-56 w-full object-cover rounded shadow mx-auto transition-all duration-300" />
+                                    <button type="button" class="absolute right-2 z-10 bg-yellow-400 hover:bg-yellow-600 text-black rounded-full p-3 shadow top-1/2 -translate-y-1/2 text-xl" onclick="showNextImage(<?= $idx ?>)">
+                                        &#8594;
+                                    </button>
+                                </div>
+                            <?php endif; ?>
+                            <div class="text-xs text-gray-400 text-right mt-auto w-full"><?= htmlspecialchars($post['created_at']) ?></div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    </section>
+
+    <script>
+    function showPrevImage(idx) {
+        const img = document.getElementById('post-image-' + idx);
+        const images = JSON.parse(img.getAttribute('data-images'));
+        let current = parseInt(img.getAttribute('data-index'));
+        current = (current - 1 + images.length) % images.length;
+        img.src = images[current];
+        img.setAttribute('data-index', current);
+    }
+    function showNextImage(idx) {
+        const img = document.getElementById('post-image-' + idx);
+        const images = JSON.parse(img.getAttribute('data-images'));
+        let current = parseInt(img.getAttribute('data-index'));
+        current = (current + 1) % images.length;
+        img.src = images[current];
+        img.setAttribute('data-index', current);
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        <?php foreach ($postings as $idx => $post): 
+            $images = [];
+            for ($i = 1; $i <= 5; $i++) {
+                if (!empty($post['image'.$i])) {
+                    $images[] = '/uplaods/' . htmlspecialchars($post['image'.$i]);
+                }
+            }
+            if (count($images) > 1): ?>
+            setInterval(function() { showNextImage(<?= $idx ?>); }, 3000);
+        <?php endif; endforeach; ?>
+    });
+    </script>
 
     <!-- Footer -->
     <footer class="bg-black text-yellow-400 py-6 mt-12">

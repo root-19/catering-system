@@ -4,7 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Check if user is logged in and is admin
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'helper') {
     header('Location: /login');
     exit();
 }
@@ -65,7 +65,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
                 <!-- Desktop Navigation -->
                 <div class="hidden md:block">
                     <div class="flex items-baseline ">
-                        <a href="/helper/dashboard" class="nav-link text-gray-600 hover:text-blue-700 rounded-md text-sm font-medium flex items-center">
+                        <a href="/admin/dashboard" class="nav-link text-gray-600 hover:text-blue-700 rounded-md text-sm font-medium flex items-center">
                             <i class="fas fa-tachometer-alt"></i>
                             Dashboard
                         </a>
@@ -73,7 +73,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
                             <i class="fas fa-users"></i>
                             Users
                         </a>
-                        <a href="/helper/service" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
+                        <a href="/admin/service" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
                             <i class="fas fa-concierge-bell"></i>
                             Service
                         </a>
@@ -85,7 +85,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
                             <i class="fas fa-star"></i>
                             Review
                         </a>
-                        <a href="/helper/reservation" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
+                        <a href="/admin/reservation" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
                             <i class="fas fa-calendar-check"></i>
                             Reservations
                         </a>

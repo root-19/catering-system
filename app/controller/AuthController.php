@@ -52,7 +52,7 @@ class AuthController {
     public function login() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = $this->sanitizeInput($_POST['email'] ?? '');
-            $password = $_POST['password'] ?? ''; // Don't sanitize password before verification
+            $password = $_POST['password'] ?? '';
 
             if (empty($email) || empty($password)) {
                 $_SESSION['error'] = 'Please fill in all fields';
@@ -73,45 +73,46 @@ class AuthController {
                 exit();
             }
 
-            // Try admin login first
-            $adminResult = $this->adminAuth->attemptLogin($email, $password);
-            
-            if ($adminResult['success']) {
-                if (isset($adminResult['user']) && is_array($adminResult['user'])) {
-                    $this->setUserSession($adminResult['user'], 'admin');
-                    $this->resetLoginAttempts($email);
-
-                    if (isset($_POST['remember']) && $_POST['remember']) {
-                        $token = bin2hex(random_bytes(32));
-                        $this->adminAuth->updateRememberToken($adminResult['user']['id'], $token);
-                        setcookie('remember_token', $token, time() + (30 * 24 * 60 * 60), '/', '', true, true);
-                    }
-
-                    header('Location: /admin/dashboard');
-                    exit();
-                }
+            // 1. Check admins
+            $adminStmt = $this->db->prepare('SELECT * FROM admins WHERE email = ?');
+            $adminStmt->execute([$email]);
+            $admin = $adminStmt->fetch(\PDO::FETCH_ASSOC);
+            if ($admin && password_verify($password, $admin['password'])) {
+                $_SESSION['user_id'] = $admin['id'];
+                $_SESSION['username'] = $admin['username'];
+                $_SESSION['role'] = 'admin';
+                $this->resetLoginAttempts($email);
+                header('Location: /admin/dashboard');
+                exit();
             }
 
-            // Try user login if admin login failed
-            $userResult = $this->userAuth->attemptLogin($email, $password);
-            
-            if ($userResult['success']) {
-                if (isset($userResult['user']) && is_array($userResult['user'])) {
-                    $this->setUserSession($userResult['user'], 'user');
-                    $this->resetLoginAttempts($email);
-
-                    if (isset($_POST['remember']) && $_POST['remember']) {
-                        $token = bin2hex(random_bytes(32));
-                        $this->userAuth->updateRememberToken($userResult['user']['id'], $token);
-                        setcookie('remember_token', $token, time() + (30 * 24 * 60 * 60), '/', '', true, true);
-                    }
-
-                    header('Location: /dashboard');
-                    exit();
-                }
+            // 2. Check users
+            $userStmt = $this->db->prepare('SELECT * FROM users WHERE email = ?');
+            $userStmt->execute([$email]);
+            $user = $userStmt->fetch(\PDO::FETCH_ASSOC);
+            if ($user && password_verify($password, $user['password'])) {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['username'] = $user['username'];
+                $_SESSION['role'] = 'user';
+                $this->resetLoginAttempts($email);
+                header('Location: /dashboard');
+                exit();
             }
 
-            // Increment failed login attempts
+            // 3. Check helpers
+            $helperStmt = $this->db->prepare('SELECT * FROM helpers WHERE email = ?');
+            $helperStmt->execute([$email]);
+            $helper = $helperStmt->fetch(\PDO::FETCH_ASSOC);
+            if ($helper && password_verify($password, $helper['password'])) {
+                $_SESSION['user_id'] = $helper['id'];
+                $_SESSION['username'] = $helper['username'];
+                $_SESSION['role'] = 'helper';
+                $this->resetLoginAttempts($email);
+                header('Location: /helper/dashboard');
+                exit();
+            }
+
+            // If none matched
             $this->incrementLoginAttempts($email);
             $_SESSION['error'] = 'Invalid email or password';
             header('Location: /login');
@@ -157,6 +158,12 @@ class AuthController {
         $_SESSION['role'] = $role;
         $_SESSION['api_key'] = $user['api_key'] ?? null;
         $_SESSION['phone'] = $user['phone'] ?? null;
+        // Set allowed_sections for admin
+        if ($role === 'admin' && isset($user['allowed_sections'])) {
+            $_SESSION['admin_allowed_sections'] = $user['allowed_sections'];
+        } else {
+            unset($_SESSION['admin_allowed_sections']);
+        }
     }
 
     public function register() {

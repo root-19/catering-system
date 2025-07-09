@@ -26,27 +26,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (strlen($password) < 8) {
         $error = 'Password must be at least 8 characters.';
     } else {
-        // Check if email already exists
-        $stmt = $db->prepare('SELECT id FROM admins WHERE email = ?');
+        // Check if email already exists in helpers
+        $stmt = $db->prepare('SELECT id FROM helpers WHERE email = ?');
         $stmt->execute([$email]);
         if ($stmt->fetch()) {
-            $error = 'An admin with this email already exists.';
+            $error = 'A helper with this email already exists.';
         } else {
-            // Insert new admin
+            // Insert new helper with role
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            $insertQuery = 'INSERT INTO admins (username, email, password, role) VALUES (?, ?, ?, \'admin\')';
+            $insertQuery = 'INSERT INTO helpers (username, email, password, role) VALUES (?, ?, ?, \'helper\')';
             $result = $db->prepare($insertQuery)->execute([$username, $email, $hashedPassword]);
             if ($result) {
-                $success = 'Admin account created successfully!';
+                $success = 'Helper account created successfully!';
             } else {
-                $error = 'Failed to create admin account.';
+                $error = 'Failed to create helper account.';
             }
         }
     }
 }
 
-// Fetch all admins
-$admins = $db->query('SELECT id, username, email, role FROM admins ORDER BY id DESC')->fetchAll(PDO::FETCH_ASSOC);
+// Fetch all helpers
+$helpers = $db->query('SELECT id, username, email, role, created_at FROM helpers ORDER BY id DESC')->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -111,15 +111,17 @@ $admins = $db->query('SELECT id, username, email, role FROM admins ORDER BY id D
                             <th class="py-2 px-4 border-b">Username</th>
                             <th class="py-2 px-4 border-b">Email</th>
                             <th class="py-2 px-4 border-b">Role</th>
+                            <th class="py-2 px-4 border-b">Created At</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($admins as $admin): ?>
+                        <?php foreach ($helpers as $helper): ?>
                             <tr class="hover:bg-yellow-50 transition-colors duration-200">
-                                <td class="py-2 px-4 border-b text-center"><?php echo $admin['id']; ?></td>
-                                <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($admin['username']); ?></td>
-                                <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($admin['email']); ?></td>
-                                <td class="py-2 px-4 border-b text-center"><?php echo htmlspecialchars($admin['role']); ?></td>
+                                <td class="py-2 px-4 border-b text-center"><?php echo $helper['id']; ?></td>
+                                <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($helper['username']); ?></td>
+                                <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($helper['email']); ?></td>
+                                <td class="py-2 px-4 border-b text-center"><?php echo htmlspecialchars($helper['role']); ?></td>
+                                <td class="py-2 px-4 border-b text-center"><?php echo htmlspecialchars($helper['created_at']); ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

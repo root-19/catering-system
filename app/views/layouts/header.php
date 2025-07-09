@@ -27,7 +27,7 @@ if (session_status() === PHP_SESSION_NONE) {
                     <!-- <a href="/profile" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out">
                         Profile
                     </a>
-                    <?php if ($_SESSION['role'] === 'user'): ?>
+                    <?php if ($_SESSION['role'] === 'helper'): ?>
                     <a href="/admin/dashboard" class="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out">
                         Admin Panel
                     </a>

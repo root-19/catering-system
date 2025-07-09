@@ -51,6 +51,8 @@ $routes = [
     '/admin/reservation' => ['view', 'admin/reservation', true, 'admin'],
     '/admin/calendar' => ['view', 'admin/calendar', true, 'admin'],
     '/admin/reports' => ['view', 'admin/reports', true, 'admin'],
+    '/admin/posting' => ['view', 'admin/posting', true, 'admin'],
+
 
 
 
@@ -61,6 +63,7 @@ $routes = [
     '/admin/review/approve' => [App\Controller\ReviewController::class, 'approve', true, 'admin'],
     '/payment_success' => ['view', 'payment_success', true],
     '/payment_failed' => ['public', 'payment_failed', false],
+    '/helper/dashboard' => ['view', 'helper/dashboard', true, 'helper'],
 
 ];
 

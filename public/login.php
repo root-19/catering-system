@@ -1,5 +1,5 @@
 <?php
-session_start();
+// session_start();
 require_once __DIR__ . '/../vendor/autoload.php';
 
 // Ensure CSRF token exists for the session
