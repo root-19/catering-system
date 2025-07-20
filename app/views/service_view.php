@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/layouts/header.php';
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../models/ServiceModel.php';
+use App\Models\ServiceModel;
 
 
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
@@ -54,6 +56,9 @@ $reservedStmt->execute([$serviceId]);
 while ($row = $reservedStmt->fetch(PDO::FETCH_ASSOC)) {
     $reservedDates[] = $row['reservation_date'];
 }
+
+// Get menu for dropdowns
+$menu = ServiceModel::getMenu();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -142,12 +147,17 @@ while ($row = $reservedStmt->fetch(PDO::FETCH_ASSOC)) {
     <main class="main-flex">
         <!-- Service Details (Left) -->
         <div class="service-card">
-            <h3 class="text-3xl font-bold catering-font mb-4 text-yellow-600 text-center"><?php echo htmlspecialchars($service['package_name']); ?></h3>
+            <h3 class="text-3xl font-bold catering-font mb-4 text-yellow-600 text-center" id="displayPackageName"><?php echo htmlspecialchars($service['package_name']); ?></h3>
             <?php if (!empty($service['image'])): ?>
                 <img src="/uplaods/<?php echo htmlspecialchars($service['image']); ?>" alt="Service Image" class="h-64 w-full object-cover" />
             <?php endif; ?>
-            <div class="w-full mb-3"><span class="font-semibold">category:</span> <?php echo htmlspecialchars($service['category']); ?></div>
-            <div class="w-full mb-3"><span class="font-semibold">item:</span> <?php echo htmlspecialchars($service['item']); ?></div>
+            <div class="w-full mb-3 flex items-center">
+                <span class="font-semibold">category:</span> <span id="displayCategory" class="ml-1"><?php echo htmlspecialchars($service['category']); ?></span>
+                <button type="button" id="editCategoryItemBtn" class="ml-2 px-2 py-1 text-xs bg-yellow-400 hover:bg-yellow-500 rounded">Edit</button>
+            </div>
+            <div class="w-full mb-3 flex items-center">
+                <span class="font-semibold">item:</span> <span id="displayItem" class="ml-1"><?php echo htmlspecialchars($service['item']); ?></span>
+            </div>
             <div class="w-full mb-3 text-lg"><span class="font-semibold">Price:</span> ₱<?php echo htmlspecialchars($service['price'] ?? $service['packs']); ?></div>
             <?php
                             // Calculate downpayment as 30% of price
@@ -170,9 +180,11 @@ while ($row = $reservedStmt->fetch(PDO::FETCH_ASSOC)) {
             <?php endif; ?>
             <form method="post" action="create_invoice" class="space-y-4" id="reservationForm">
                 <input type="hidden" name="service_id" value="<?php echo htmlspecialchars($serviceId); ?>">
-                <input type="hidden" name="package_name" value="<?php echo htmlspecialchars($service['package_name']); ?>">
+                <input type="hidden" name="package_name" id="formPackageName" value="<?php echo htmlspecialchars($service['package_name']); ?>">
                 <input type="hidden" name="amount" id="amount" value="<?php echo htmlspecialchars(number_format($downpayment, 2, '.', '')); ?>">
                 <input type="hidden" name="user_email" value="<?php echo isset($_SESSION['user_email']) ? htmlspecialchars($_SESSION['user_email']) : ''; ?>">
+                <input type="hidden" name="category" id="formCategory" value="<?php echo htmlspecialchars($service['category']); ?>">
+                <input type="hidden" name="item" id="formItem" value="<?php echo htmlspecialchars($service['item']); ?>">
                 <div>
                     <label for="reservation_date" class="block font-semibold mb-1">Reservation Date</label>
                     <input type="text" id="reservation_date" name="reservation_date" class="w-full border border-gray-300 rounded px-3 py-2" required placeholder="Select a date">
@@ -193,9 +205,41 @@ while ($row = $reservedStmt->fetch(PDO::FETCH_ASSOC)) {
             </form>
         </div>
     </main>
+    <!-- Edit Category/Item Modal -->
+    <div id="editCategoryItemModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+      <div class="bg-white rounded-lg p-0 w-full max-w-2xl relative flex flex-col md:flex-row shadow-lg">
+        <div class="md:w-1/2 p-6 bg-gray-50 border-r border-gray-200 flex flex-col justify-center">
+          <h3 class="text-lg font-bold mb-3 text-yellow-700">Available Categories</h3>
+          <ul class="mb-0 text-sm text-gray-700 space-y-2 max-h-96 overflow-y-auto pr-2">
+            <?php foreach ($menu as $cat => $items): ?>
+              <li><span class="font-semibold text-yellow-700"><?php echo htmlspecialchars($cat); ?>:</span> <span class="text-gray-600"><?php echo implode(', ', $items); ?></span></li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
+        <div class="md:w-1/2 p-8 flex flex-col justify-center relative">
+          <button id="closeEditCategoryItemModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl">&times;</button>
+          <h2 class="text-2xl font-bold mb-6 text-yellow-700">Edit Package, Category & Item</h2>
+          <div class="mb-5">
+            <label class="block text-sm font-semibold mb-1 text-gray-700">Package Name</label>
+            <input type="text" id="modalPackageName" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-yellow-400" value="<?php echo htmlspecialchars($service['package_name']); ?>">
+          </div>
+          <div class="mb-5">
+            <label class="block text-sm font-semibold mb-1 text-gray-700">Category</label>
+            <input type="text" id="modalCategory" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-yellow-400" value="<?php echo htmlspecialchars($service['category']); ?>">
+          </div>
+          <div class="mb-6">
+            <label class="block text-sm font-semibold mb-1 text-gray-700">Item</label>
+            <input type="text" id="modalItem" class="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-yellow-400" value="<?php echo htmlspecialchars($service['item']); ?>">
+          </div>
+          <button id="saveCategoryItemBtn" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-8 rounded-lg shadow self-end">Save</button>
+        </div>
+      </div>
+    </div>
     <script>
         // Pass reserved dates from PHP to JS
         const reservedDates = <?php echo json_encode($reservedDates); ?>;
+        // Pass menu from PHP to JS
+        const menu = <?php echo json_encode($menu); ?>;
         document.addEventListener('DOMContentLoaded', function() {
             // Replace native date input with flatpickr
             flatpickr('#reservation_date', {
@@ -208,6 +252,22 @@ while ($row = $reservedStmt->fetch(PDO::FETCH_ASSOC)) {
                     }
                 },
                 minDate: 'today',
+            });
+
+            // Category/Item dropdown logic
+            const categorySelect = document.getElementById('category');
+            const itemSelect = document.getElementById('item');
+            categorySelect.addEventListener('change', function() {
+                const selectedCat = this.value;
+                itemSelect.innerHTML = '<option value="">Select item</option>';
+                if (menu[selectedCat]) {
+                    menu[selectedCat].forEach(function(item) {
+                        const opt = document.createElement('option');
+                        opt.value = item;
+                        opt.textContent = item;
+                        itemSelect.appendChild(opt);
+                    });
+                }
             });
 
             // SweetAlert2 on form submit if reserved date is selected (double check)
@@ -244,6 +304,48 @@ while ($row = $reservedStmt->fetch(PDO::FETCH_ASSOC)) {
                 paymentInfo.textContent = `You will pay the full amount (₱${Number(fullAmount).toLocaleString(undefined, {minimumFractionDigits:2})}) now via GCash.`;
                 reserveBtn.textContent = 'Reserve & Pay Full Amount with GCash';
             }
+        });
+
+        // Category/Item modal logic
+        const editCategoryItemBtn = document.getElementById('editCategoryItemBtn');
+        const editCategoryItemModal = document.getElementById('editCategoryItemModal');
+        const closeEditCategoryItemModal = document.getElementById('closeEditCategoryItemModal');
+        const modalCategory = document.getElementById('modalCategory');
+        const modalItem = document.getElementById('modalItem');
+        const saveCategoryItemBtn = document.getElementById('saveCategoryItemBtn');
+        const displayCategory = document.getElementById('displayCategory');
+        const displayItem = document.getElementById('displayItem');
+        const displayPackageName = document.getElementById('displayPackageName');
+        const formCategory = document.getElementById('formCategory');
+        const formItem = document.getElementById('formItem');
+        const formPackageName = document.getElementById('formPackageName');
+        const modalPackageName = document.getElementById('modalPackageName');
+
+        editCategoryItemBtn.addEventListener('click', function() {
+          // Set modal to current values
+          modalPackageName.value = formPackageName.value;
+          modalCategory.value = formCategory.value;
+          modalItem.value = formItem.value;
+          editCategoryItemModal.classList.remove('hidden');
+        });
+        closeEditCategoryItemModal.addEventListener('click', function() {
+          editCategoryItemModal.classList.add('hidden');
+        });
+        editCategoryItemModal.addEventListener('click', function(e) {
+          if (e.target === editCategoryItemModal) editCategoryItemModal.classList.add('hidden');
+        });
+        saveCategoryItemBtn.addEventListener('click', function() {
+          if (!modalPackageName.value || !modalCategory.value || !modalItem.value) {
+            Swal.fire({ icon: 'warning', title: 'Please fill in all fields.' });
+            return;
+          }
+          displayPackageName.textContent = modalPackageName.value;
+          displayCategory.textContent = modalCategory.value;
+          displayItem.textContent = modalItem.value;
+          formPackageName.value = modalPackageName.value;
+          formCategory.value = modalCategory.value;
+          formItem.value = modalItem.value;
+          editCategoryItemModal.classList.add('hidden');
         });
     </script>
 </body>

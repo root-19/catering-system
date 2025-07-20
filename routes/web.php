@@ -37,6 +37,14 @@ $routes = [
     '/services/create_invoice' => ['view', 'create_invoice', true, 'user'],
     '/review/submit' => [App\Controller\ReviewController::class, 'submit', true, 'user'],
     '/review/show' => [App\Controller\ReviewController::class, 'show', false],
+   
+
+    // Hleapers route
+
+    '/helper/dashboard' => ['view', 'helper/dashboard', true, 'helper'],
+    '/helper/service' => ['view', 'helper/service', true, 'helper'],
+    '/helper/reservation' => ['view', 'helper/reservation', true, 'helper'],
+
 
     // Admin routes
     '/admin/dashboard' => ['view', 'admin/dashboard', true, 'admin'],
@@ -52,18 +60,11 @@ $routes = [
     '/admin/calendar' => ['view', 'admin/calendar', true, 'admin'],
     '/admin/reports' => ['view', 'admin/reports', true, 'admin'],
     '/admin/posting' => ['view', 'admin/posting', true, 'admin'],
-
-
-
-
-
-
     '/admin/service' => [App\Controller\ServiceController::class, 'handleForm', true, 'admin'],
     '/services/view' => ['view', 'service_view', false],
     '/admin/review/approve' => [App\Controller\ReviewController::class, 'approve', true, 'admin'],
     '/payment_success' => ['view', 'payment_success', true],
     '/payment_failed' => ['public', 'payment_failed', false],
-    '/helper/dashboard' => ['view', 'helper/dashboard', true, 'helper'],
 
 ];
 

@@ -7,6 +7,8 @@ return [
             user_id INT NOT NULL,
             service_id INT NOT NULL,
             package_name VARCHAR(255) NOT NULL,
+            category VARCHAR(100),
+            item VARCHAR(255),
             reservation_date DATE NOT NULL,
             notes TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

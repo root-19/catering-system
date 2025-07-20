@@ -43,14 +43,11 @@ $orders = $pdo->query('SELECT o.*, u.username, u.email, s.package_name AS servic
                     <thead class="bg-yellow-50">
                         <tr>
                             <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">External ID</th>
                             <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                             <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
                             <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reservation Date</th>
                             <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
+                            <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -58,19 +55,19 @@ $orders = $pdo->query('SELECT o.*, u.username, u.email, s.package_name AS servic
                             <?php foreach ($orders as $order): ?>
                                 <tr class="hover:bg-yellow-50 transition-colors duration-200">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?php echo htmlspecialchars($order['id']); ?></td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><?php echo htmlspecialchars($order['external_id'] ?? ''); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($order['username']); ?></td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($order['email']); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($order['service_name']); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($order['reservation_date']); ?></td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₱<?php echo number_format($order['amount'], 2); ?></td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($order['payment_status'] ?? 'pending'); ?></td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($order['created_at']); ?></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <button class="show-details-btn bg-yellow-400 hover:bg-yellow-500 text-black px-3 py-1 rounded" 
+                                            data-order='<?php echo json_encode($order); ?>'>View</button>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="8" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No orders found</td>
+                                <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">No orders found</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -78,8 +75,35 @@ $orders = $pdo->query('SELECT o.*, u.username, u.email, s.package_name AS servic
             </div>
         </div>
     </main>
+    <div id="orderModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 relative">
+            <button id="closeModal" class="absolute top-2 right-2 text-gray-500 hover:text-black text-2xl">&times;</button>
+            <h3 class="text-xl font-bold mb-4">Order Details</h3>
+            <table class="w-full text-sm mb-2" id="orderDetailsTable"></table>
+        </div>
+    </div>
     <script>
         AOS.init({ duration: 800, once: true, offset: 50 });
+        document.querySelectorAll('.show-details-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const order = JSON.parse(this.getAttribute('data-order'));
+                let html = '';
+                for (const key in order) {
+                    if (order.hasOwnProperty(key)) {
+                        html += `<tr><td class='font-semibold pr-2 py-1'>${key.replace(/_/g, ' ').toUpperCase()}</td><td class='py-1'>${order[key]}</td></tr>`;
+                    }
+                }
+                document.getElementById('orderDetailsTable').innerHTML = html;
+                document.getElementById('orderModal').classList.remove('hidden');
+            });
+        });
+        document.getElementById('closeModal').onclick = function() {
+            document.getElementById('orderModal').classList.add('hidden');
+        };
+        // Optional: close modal on background click
+        document.getElementById('orderModal').addEventListener('click', function(e) {
+            if (e.target === this) this.classList.add('hidden');
+        });
     </script>
 </body>
 </html>

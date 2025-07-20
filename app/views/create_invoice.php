@@ -23,6 +23,8 @@ $packageName = $_POST['package_name'] ?? '';
 $reservationDate = $_POST['reservation_date'] ?? '';
 $notes = $_POST['notes'] ?? '';
 $amount = $_POST['amount'] ?? 0;
+$category = $_POST['category'] ?? '';
+$item = $_POST['item'] ?? '';
 
 // get email
 $userModel = new \root_dev\Models\User();
@@ -59,11 +61,13 @@ try {
 
     // Save pending order in database
     $pdo = Database::connect();
-    $stmt = $pdo->prepare('INSERT INTO orders (user_id, service_id, package_name, reservation_date, notes, amount, payment_status, external_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())');
+    $stmt = $pdo->prepare('INSERT INTO orders (user_id, service_id, package_name, category, item, reservation_date, notes, amount, payment_status, external_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())');
     $stmt->execute([
         $userId,
         $serviceId,
         $packageName,
+        $category,
+        $item,
         $reservationDate,
         $notes,
         $amount,

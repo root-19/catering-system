@@ -69,38 +69,38 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'helper') {
                             <i class="fas fa-tachometer-alt"></i>
                             Dashboard
                         </a>
-                        <a href="/admin/users" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
+                        <!-- <a href="/admin/users" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
                             <i class="fas fa-users"></i>
                             Users
-                        </a>
-                        <a href="/admin/service" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
+                        </a> -->
+                        <a href="/helper/service" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
                             <i class="fas fa-concierge-bell"></i>
                             Service
                         </a>
-                        <a href="/admin/accounts" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
+                        <!-- <a href="/admin/accounts" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
                             <i class="fas fa-wallet"></i>
                             Accounts
-                        </a>
-                        <a href="/admin/user_review" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
+                        </a> -->
+                        <!-- <a href="/admin/user_review" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
                             <i class="fas fa-star"></i>
                             Review
-                        </a>
-                        <a href="/admin/reservation" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
+                        </a> -->
+                        <a href="/helper/reservation" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
                             <i class="fas fa-calendar-check"></i>
                             Reservations
                         </a>
-                        <a href="/admin/calendar" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
+                        <!-- <a href="/admin/calendar" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
                             <i class="fas fa-calendar-alt"></i>
                             Calendar
-                        </a>
-                        <a href="/admin/reports" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
+                        </a> -->
+                        <!-- <a href="/admin/reports" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
                             <i class="fas fa-chart-line"></i>
                             Reports
-                        </a>
-                         <a href="/admin/posting" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
+                        </a> -->
+                         <!-- <a href="/admin/posting" class="nav-link text-gray-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2">
                             <i class="fas fa-chart-line"></i>
                             Posting
-                        </a>
+                        </a> -->
                     </div>
                 </div>
 
@@ -196,3 +196,13 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'helper') {
     </script>
 </body>
 </html> 
+
+
+
+
+
+
+
+
+
+

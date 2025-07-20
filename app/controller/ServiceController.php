@@ -124,6 +124,7 @@ class ServiceController
         }
     }
 
+    
     private function getAllServices()
     {
         require_once __DIR__ . '/../../config/database.php';

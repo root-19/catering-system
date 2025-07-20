@@ -123,10 +123,10 @@ $user_orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
               <!-- Order Details -->
               <div class="p-6">
                 <h4 class="text-xl font-semibold text-gray-800 mb-2">
-                  <?php echo htmlspecialchars($order['service_name'] ?? 'Service'); ?>
+                  <?php echo htmlspecialchars($order['item'] ?: ($order['service_name'] ?? 'Service')); ?>
                 </h4>
                 <p class="text-yellow-600 font-semibold mb-2">
-                  Package: <?php echo htmlspecialchars($order['package_name']); ?>
+                  Package: <?php echo htmlspecialchars($order['category'] ?: $order['package_name']); ?>
                 </p>
                 
                 <div class="space-y-2 text-sm text-gray-600 mb-4">
@@ -156,9 +156,9 @@ $user_orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
                   <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-semibold">
                     Confirmed
                   </span>
-                  <button class="text-yellow-600 hover:text-yellow-700 font-semibold text-sm">
-                    View Details
-                  </button>
+                  <!-- <button class="text-yellow-600 hover:text-yellow-700 font-semibold text-sm edit-order-btn" data-order='<?php echo json_encode($order); ?>'>
+                    Edit
+                  </button> -->
                 </div>
               </div>
             </div>
@@ -166,6 +166,30 @@ $user_orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
       <?php endif; ?>
     </section>
+
+    <!-- Edit Order Modal -->
+    <div id="editOrderModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+      <div class="bg-white rounded-lg p-8 w-full max-w-md relative">
+        <button id="closeEditModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+        <h2 class="text-2xl font-bold mb-4">Edit Order</h2>
+        <form id="editOrderForm" method="POST" action="/public/update_order.php">
+          <input type="hidden" name="order_id" id="edit_order_id">
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-1">Category</label>
+            <input type="text" name="category" id="edit_category" class="w-full border rounded px-3 py-2">
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-1">Item</label>
+            <input type="text" name="item" id="edit_item" class="w-full border rounded px-3 py-2">
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-1">Notes</label>
+            <textarea name="notes" id="edit_notes" class="w-full border rounded px-3 py-2"></textarea>
+          </div>
+          <button type="submit" class="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-6 rounded-lg shadow">Save Changes</button>
+        </form>
+      </div>
+    </div>
 
     <script>
       AOS.init({
@@ -203,6 +227,28 @@ $user_orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
           card.style.opacity = '0';
           card.style.animation = `fadeIn 0.5s ease-in ${index * 0.1}s forwards`;
         });
+      });
+
+      // Edit Order Modal Logic
+      const editOrderModal = document.getElementById('editOrderModal');
+      const closeEditModal = document.getElementById('closeEditModal');
+      const editOrderForm = document.getElementById('editOrderForm');
+      document.querySelectorAll('.edit-order-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const order = JSON.parse(this.getAttribute('data-order'));
+          document.getElementById('edit_order_id').value = order.id;
+          document.getElementById('edit_category').value = order.category || '';
+          document.getElementById('edit_item').value = order.item || '';
+          document.getElementById('edit_notes').value = order.notes || '';
+          editOrderModal.classList.remove('hidden');
+        });
+      });
+      closeEditModal.addEventListener('click', function() {
+        editOrderModal.classList.add('hidden');
+      });
+      // Close modal on outside click
+      editOrderModal.addEventListener('click', function(e) {
+        if (e.target === editOrderModal) editOrderModal.classList.add('hidden');
       });
     </script>
 </body>

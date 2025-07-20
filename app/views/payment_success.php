@@ -18,6 +18,18 @@ if ($externalId) {
         $updateStmt = $pdo->prepare('UPDATE orders SET payment_status = ? WHERE external_id = ?');
         $updateStmt->execute(['paid', $externalId]);
         $orderFound = true;
+        // Send email notification if not already sent
+        if (empty($order['email_notified']) || $order['email_notified'] == 0) {
+            require_once __DIR__ . '/../../app/models/User.php';
+            require_once __DIR__ . '/../../app/Helpers/EmailHelper.php';
+            $userModel = new \root_dev\Models\User();
+            $user = $userModel->find($order['user_id']);
+            if ($user && !empty($user['email'])) {
+                \App\Helpers\EmailHelper::sendOrderSuccess($user['email'], $order);
+                // Mark as notified
+                $pdo->prepare('UPDATE orders SET email_notified = 1 WHERE id = ?')->execute([$order['id']]);
+            }
+        }
         // Example: set receipt path (customize as needed)
         $receiptDir = __DIR__ . '/../../public/receipts/';
         if (!is_dir($receiptDir)) {

@@ -13,26 +13,20 @@ $stmt = $db->prepare($sql);
 $stmt->execute([$today]);
 $reservations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Get all admin emails
-$adminEmails = [];
-$adminStmt = $db->query("SELECT email FROM admins");
-while ($row = $adminStmt->fetch(PDO::FETCH_ASSOC)) {
-    $adminEmails[] = $row['email'];
-}
+// Set the single admin email
+$adminEmail = 'wasieacuna@gmail.com';
 
-foreach ($reservations as $reservation) {
-    $to = $reservation['email'];
-    $subject = "Reservation Reminder: " . $reservation['package_name'];
-    $message = "<h2>Hi " . htmlspecialchars($reservation['username']) . ",</h2>"
-        . "<p>This is a reminder for your reservation today (" . htmlspecialchars($reservation['reservation_date']) . ") for the service: <strong>" . htmlspecialchars($reservation['package_name']) . "</strong>.</p>"
-        . "<p>Thank you for choosing us!</p>";
-    EmailHelper::sendMail($to, $subject, $message);
-
-    // Notify all admins
-    $adminSubject = "[ADMIN ALERT] Reservation Event Today: " . $reservation['package_name'];
-    $adminMessage = "<h2>Admin Notification</h2>"
-        . "<p>There is a reservation event today for <strong>" . htmlspecialchars($reservation['username']) . "</strong> (" . htmlspecialchars($reservation['email']) . ") for the service: <strong>" . htmlspecialchars($reservation['package_name']) . "</strong> (Reservation Date: " . htmlspecialchars($reservation['reservation_date']) . ").</p>";
-    foreach ($adminEmails as $adminEmail) {
-        EmailHelper::sendMail($adminEmail, $adminSubject, $adminMessage);
+if (count($reservations) > 0) {
+    // Build a summary message
+    $adminSubject = "[ADMIN ALERT] Reservation Events Today (" . $today . ")";
+    $adminMessage = "<h2>Admin Notification</h2>";
+    $adminMessage .= "<p>The following reservation events are scheduled for today:</p><ul>";
+    foreach ($reservations as $reservation) {
+        $adminMessage .= "<li><strong>User:</strong> " . htmlspecialchars($reservation['username']) .
+                         " (" . htmlspecialchars($reservation['email']) . ")<br>" .
+                         "<strong>Service:</strong> " . htmlspecialchars($reservation['package_name']) . "</li>";
     }
+    $adminMessage .= "</ul>";
+
+    EmailHelper::sendMail($adminEmail, $adminSubject, $adminMessage);
 } 
